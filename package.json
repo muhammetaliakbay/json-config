@@ -1,0 +1,24 @@
+{
+  "name": "@muhammetaliakbay/json-config",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/muhammetaliakbay/json-config",
+  "author": "https://github.com/muhammetaliakbay",
+  "devDependencies": {
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.3",
+    "@types/node": "^14.0.13"
+  },
+  "scripts": {
+    "install": "npm run build",
+    "clean": "rimraf ./lib",
+    "build": "(npm run clean) && tsc",
+    "publish-public": "npm publish --access public"
+  },
+  "dependencies": {
+    "rimraf": "^3.0.2",
+    "@muhammetaliakbay/structure-check": "^0.0.4",
+    "rxjs": "^6.5.5"
+  }
+}

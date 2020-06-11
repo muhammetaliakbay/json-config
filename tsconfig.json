@@ -1,0 +1,21 @@
+{
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "moduleResolution": "Node",
+    "module": "CommonJS",
+    "declaration": true,
+    "inlineSourceMap": true,
+    "strict": true,
+    "target": "ES2019"
+  }
+}
