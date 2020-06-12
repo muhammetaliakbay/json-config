@@ -17,7 +17,7 @@
     "publish-public": "npm publish --access public"
   },
   "dependencies": {
-    "@muhammetaliakbay/structure-check": "^0.0.5",
+    "@muhammetaliakbay/structure-check": "^0.0.7",
     "rxjs": "^6.5.5"
   }
 }
