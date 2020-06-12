@@ -1,7 +1,10 @@
 {
   "name": "@muhammetaliakbay/json-config",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "types": "lib/index.d.ts",
   "repository": "https://github.com/muhammetaliakbay/json-config",
   "author": "https://github.com/muhammetaliakbay",
