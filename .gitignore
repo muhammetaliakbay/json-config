@@ -3,3 +3,4 @@ lib
 .idea
 package-lock.json
 yarn.lock
+docs

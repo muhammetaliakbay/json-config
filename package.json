@@ -15,8 +15,15 @@
   },
   "devDependencies": {
     "tslib": "^2.0.0",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.3",
-    "@types/node": "^14.0.13"
+    "mocha": "^8.0.1",
+    "chai": "^4.2.0",
+    "typedoc": "^0.17.7",
+    "@types/node": "^14.0.13",
+    "@types/mocha": "^7.0.2",
+    "@types/chai": "^4.2.11",
+    "@types/yaml": "^1.9.7"
   },
   "scripts": {
     "build": "tsc",
@@ -27,6 +34,7 @@
   },
   "dependencies": {
     "@muhammetaliakbay/structure-check": "^0.0",
-    "rxjs": "^6.5.5"
+    "rxjs": "^6.5.5",
+    "yaml": "^1.10.0"
   }
 }
