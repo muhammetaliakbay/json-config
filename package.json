@@ -1,23 +1,29 @@
 {
   "name": "@muhammetaliakbay/json-config",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "lib/index.js",
   "files": [
-    "lib"
+    "lib/**/*"
   ],
+  "description": "JSON-Config is a Reactive-TypeScript library to create, modify, load and save automatically JSON/YAML configurations with type checks.",
+  "license": "GPL-3.0",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/muhammetaliakbay/json-config",
   "author": "https://github.com/muhammetaliakbay",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "tslib": "^2.0.0",
     "typescript": "^3.9.3",
-    "@types/node": "^14.0.13",
-    "rimraf": "^3.0.2"
+    "@types/node": "^14.0.13"
   },
   "scripts": {
-    "clean": "rimraf ./lib",
     "build": "tsc",
-    "publish-public": "npm publish --access public"
+    "build-doc": "typedoc",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
   },
   "dependencies": {
     "@muhammetaliakbay/structure-check": "^0.0",
