@@ -6,6 +6,15 @@
     "lib/**/*"
   ],
   "description": "JSON-Config is a Reactive-TypeScript library to create, modify, load and save automatically JSON/YAML configurations with type checks.",
+  "keywords": [
+    "rxjs",
+    "config",
+    "observable",
+    "json",
+    "yaml",
+    "reactive",
+    "automatically"
+  ],
   "license": "GPL-3.0",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/muhammetaliakbay/json-config",
