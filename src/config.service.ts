@@ -3,6 +3,7 @@ import {promises} from 'fs';
 import {Observable, ReplaySubject} from 'rxjs';
 import {distinctUntilChanged, map} from 'rxjs/operators';
 import * as YAML from 'yaml';
+import { nextTick } from 'process';
 
 /**
  * Handler type definition for modifying live config object before save
@@ -25,6 +26,10 @@ export interface ConfigInitializer<CONF extends object> {
      * @returns Returns a new configuration object instance to be saved for first. Result can be promisified.
      */
     (): Promise<CONF> | CONF;
+}
+
+interface Task<T> {
+    (): Promise<T>
 }
 
 /**
@@ -91,31 +96,42 @@ export class ConfigService<CONF extends object> {
         }
     }
 
+    private lastPromise: Promise<any> = Promise.resolve();
+    private queueTask<T>(task: Task<T>): Promise<T> {
+        return this.lastPromise = this.lastPromise.finally().then(
+            task
+        );
+    }
+
     /**
      * Reads flat config text from file at "this.configFilePath". If file doesn't exists creates a new configuration object instance by calling "this.configInitializer".
      * @returns Returns an async result of readed, parsed and checked configuration object structure
      */
-    async readConfig(): Promise<CONF> {
-        let flatText: string | null;
-        try {
-            flatText = await promises.readFile(this.configFilePath, {encoding: 'utf8'})
-        } catch (e) {
-            flatText = null;
-        }
-        let config: CONF;
-        if (flatText == null) {
-            // no stored config found, initializing one
-            config = await this.configInitializer();
-            flatText = this.stringify(config);
-            await this.writeConfig(config); // save initialized config
-        } else {
-            config = this.parse(flatText);
-        }
-        if (!this.configStructureCheck(config)) {
-            throw new Error('config doesn\'t fit into the desired structure');
-        }
-        this.configTextSubject.next(flatText);
-        return config;
+    readConfig(): Promise<CONF> {
+        return this.queueTask(
+            async () => {
+                let flatText: string | null;
+                try {
+                    flatText = await promises.readFile(this.configFilePath, {encoding: 'utf8'})
+                } catch (e) {
+                    flatText = null;
+                }
+                let config: CONF;
+                if (flatText == null) {
+                    // no stored config found, initializing one
+                    config = await this.configInitializer();
+                    flatText = this.stringify(config);
+                    await this.writeConfig(config); // save initialized config
+                } else {
+                    config = this.parse(flatText);
+                }
+                if (!this.configStructureCheck(config)) {
+                    throw new Error('config doesn\'t fit into the desired structure');
+                }
+                this.configTextSubject.next(flatText);
+                return config;
+            }
+        )
     }
 
     /**
@@ -123,13 +139,17 @@ export class ConfigService<CONF extends object> {
      * @param config - Input configuration object to get flattened and saved.
      * @returns Returns a promise which gets resolved when file saving is done.
      */
-    async writeConfig(config: CONF): Promise<void> {
-        if (!this.configStructureCheck(config)) {
-            throw new Error('writing config doesn\'t fit into the desired structure');
-        }
-        const flatText = this.stringify(config);
-        await promises.writeFile(this.configFilePath, flatText, {encoding: 'utf8'});
-        this.configTextSubject.next(flatText);
+    writeConfig(config: CONF): Promise<void> {
+        return this.queueTask(
+            async () => {
+                if (!this.configStructureCheck(config)) {
+                    throw new Error('writing config doesn\'t fit into the desired structure');
+                }
+                const flatText = this.stringify(config);
+                await promises.writeFile(this.configFilePath, flatText, {encoding: 'utf8'});
+                this.configTextSubject.next(flatText);
+            }
+        )
     }
 
     /**
@@ -137,11 +157,15 @@ export class ConfigService<CONF extends object> {
      * @param modifier - Modify handler to be called before saving fresh config object for modifying it
      * @returns Returns a promise which gets resolved when file saving is done.
      */
-    async modifyConfig(modifier: ConfigModifier<CONF>): Promise<void> {
-        const config = await this.readConfig();
-        const modifiedConfig = await modifier(config) || config;
-        await this.writeConfig(
-            modifiedConfig
-        );
+    modifyConfig(modifier: ConfigModifier<CONF>): Promise<void> {
+        return this.queueTask(
+            async () => {
+                const config = await this.readConfig();
+                const modifiedConfig = await modifier(config) || config;
+                await this.writeConfig(
+                    modifiedConfig
+                );
+            }
+        )
     }
 }
